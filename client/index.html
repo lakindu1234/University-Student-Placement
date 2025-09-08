@@ -1,62 +1,644 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
-        <title>Student Internship Prediction</title>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Student Internship Placement Prediction</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                min-height: 100vh;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                padding: 20px;
+            }
+
+            .container {
+                background: rgba(255, 255, 255, 0.95);
+                backdrop-filter: blur(10px);
+                border-radius: 20px;
+                padding: 40px;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+                max-width: 600px;
+                width: 100%;
+                animation: slideIn 0.6s ease-out;
+            }
+
+            @keyframes slideIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(30px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            .header {
+                text-align: center;
+                margin-bottom: 40px;
+            }
+
+            .header h1 {
+                color: #333;
+                font-size: 2.2em;
+                font-weight: 700;
+                margin-bottom: 10px;
+            }
+
+            .header p {
+                color: #666;
+                font-size: 1.1em;
+            }
+
+            .form-group {
+                margin-bottom: 25px;
+            }
+
+            .form-group label {
+                display: block;
+                font-weight: 600;
+                color: #333;
+                margin-bottom: 8px;
+                font-size: 1em;
+            }
+
+            .form-group input,
+            .form-group select {
+                width: 100%;
+                padding: 15px;
+                border: 2px solid #e0e0e0;
+                border-radius: 10px;
+                font-size: 16px;
+                transition: all 0.3s ease;
+                background: #fafafa;
+            }
+
+            .form-group input:focus,
+            .form-group select:focus {
+                outline: none;
+                border-color: #667eea;
+                background: white;
+                box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            }
+
+            .form-group input.error,
+            .form-group select.error {
+                border-color: #ff4757;
+                background: #fff5f5;
+            }
+
+            .form-group input.success,
+            .form-group select.success {
+                border-color: #2ed573;
+                background: #f0fff4;
+            }
+
+            .error-message {
+                color: #ff4757;
+                font-size: 0.85em;
+                margin-top: 5px;
+                display: none;
+            }
+
+            .form-row {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 20px;
+            }
+
+            @media (max-width: 600px) {
+                .form-row {
+                    grid-template-columns: 1fr;
+                }
+            }
+
+            .submit-btn {
+                width: 100%;
+                padding: 18px;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                border: none;
+                border-radius: 12px;
+                font-size: 1.1em;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                margin-top: 20px;
+            }
+
+            .submit-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+            }
+
+            .submit-btn:disabled {
+                background: #ccc;
+                cursor: not-allowed;
+                transform: none;
+                box-shadow: none;
+            }
+
+            .loading {
+                display: none;
+                text-align: center;
+                margin-top: 20px;
+            }
+
+            .spinner {
+                border: 4px solid #f3f3f3;
+                border-top: 4px solid #667eea;
+                border-radius: 50%;
+                width: 40px;
+                height: 40px;
+                animation: spin 1s linear infinite;
+                margin: 0 auto 15px;
+            }
+
+            @keyframes spin {
+                0% {
+                    transform: rotate(0deg);
+                }
+                100% {
+                    transform: rotate(360deg);
+                }
+            }
+
+            .result {
+                margin-top: 30px;
+                padding: 20px;
+                border-radius: 12px;
+                text-align: center;
+                font-size: 1.2em;
+                font-weight: 600;
+                display: none;
+            }
+
+            .result.success {
+                background: linear-gradient(135deg, #2ed573, #17c0eb);
+                color: white;
+            }
+
+            .result.failure {
+                background: linear-gradient(135deg, #ff4757, #ff6b7a);
+                color: white;
+            }
+
+            .result.error {
+                background: linear-gradient(135deg, #ff4757, #c44569);
+                color: white;
+            }
+
+            .info-icon {
+                display: inline-block;
+                width: 16px;
+                height: 16px;
+                background: #667eea;
+                color: white;
+                border-radius: 50%;
+                text-align: center;
+                line-height: 16px;
+                font-size: 12px;
+                margin-left: 8px;
+                cursor: help;
+            }
+
+            .tooltip {
+                position: relative;
+                display: inline-block;
+            }
+
+            .tooltip .tooltiptext {
+                visibility: hidden;
+                width: 200px;
+                background-color: #555;
+                color: #fff;
+                text-align: center;
+                border-radius: 6px;
+                padding: 5px;
+                position: absolute;
+                z-index: 1;
+                bottom: 125%;
+                left: 50%;
+                margin-left: -100px;
+                opacity: 0;
+                transition: opacity 0.3s;
+                font-size: 0.8em;
+            }
+
+            .tooltip:hover .tooltiptext {
+                visibility: visible;
+                opacity: 1;
+            }
+        </style>
     </head>
     <body>
-        <h2>Internship Prediction</h2>
-        <form id="predictForm">
-            <label>IQ: <input type="number" name="iq" required /></label><br />
-            <label
-                >Previous Semester Result:
-                <input type="number" name="prev_sem_result" required /></label
-            ><br />
-            <label>CGPA: <input type="number" step="0.01" name="cgpa" required /></label><br />
-            <label
-                >Academic Performance:
-                <input type="number" name="academic_performance" required /></label
-            ><br />
-            <label
-                >Extra Curricular Score:
-                <input type="number" name="extra_curricular_score" required /></label
-            ><br />
-            <label
-                >Communication Skills:
-                <input type="number" name="communication_skills" required /></label
-            ><br />
-            <label
-                >Projects Completed:
-                <input type="number" name="projects_completed" required /></label
-            ><br />
-            <label
-                >Internship Experience (1=yes, 0=no):
-                <input type="number" name="internship_experience_yes" required /></label
-            ><br />
-            <button type="submit">Predict</button>
-        </form>
+        <div class="container">
+            <div class="header">
+                <h1>Student Placement Predictor</h1>
+                <p>Predict your internship placement chances with AI</p>
+            </div>
 
-        <h3 id="result"></h3>
+            <form id="predictionForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="iq">
+                            IQ Score
+                            <span class="tooltip">
+                                <span class="info-icon">i</span>
+                                <span class="tooltiptext">Intelligence Quotient (70-160)</span>
+                            </span>
+                        </label>
+                        <input type="number" id="iq" name="iq" min="70" max="160" required />
+                        <div class="error-message" id="iq-error">IQ must be between 70 and 160</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="prev_sem_result">
+                            Previous Semester GPA
+                            <span class="tooltip">
+                                <span class="info-icon">i</span>
+                                <span class="tooltiptext">Previous semester GPA (5.0-10.0)</span>
+                            </span>
+                        </label>
+                        <input
+                            type="number"
+                            id="prev_sem_result"
+                            name="prev_sem_result"
+                            min="5.0"
+                            max="10.0"
+                            step="0.01"
+                            required
+                        />
+                        <div class="error-message" id="prev_sem_result-error">
+                            GPA must be between 5.0 and 10.0
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="cgpa">
+                            CGPA
+                            <span class="tooltip">
+                                <span class="info-icon">i</span>
+                                <span class="tooltiptext"
+                                    >Cumulative Grade Point Average (5.0-10.0)</span
+                                >
+                            </span>
+                        </label>
+                        <input
+                            type="number"
+                            id="cgpa"
+                            name="cgpa"
+                            min="5.0"
+                            max="10.0"
+                            step="0.01"
+                            required
+                        />
+                        <div class="error-message" id="cgpa-error">
+                            CGPA must be between 5.0 and 10.0
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="academic_performance">
+                            Academic Performance
+                            <span class="tooltip">
+                                <span class="info-icon">i</span>
+                                <span class="tooltiptext">Academic rating scale (1-10)</span>
+                            </span>
+                        </label>
+                        <input
+                            type="number"
+                            id="academic_performance"
+                            name="academic_performance"
+                            min="1"
+                            max="10"
+                            required
+                        />
+                        <div class="error-message" id="academic_performance-error">
+                            Academic performance must be between 1 and 10
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="extra_curricular_score">
+                            Extra-Curricular Score
+                            <span class="tooltip">
+                                <span class="info-icon">i</span>
+                                <span class="tooltiptext">Extracurricular involvement (0-10)</span>
+                            </span>
+                        </label>
+                        <input
+                            type="number"
+                            id="extra_curricular_score"
+                            name="extra_curricular_score"
+                            min="0"
+                            max="10"
+                            required
+                        />
+                        <div class="error-message" id="extra_curricular_score-error">
+                            Score must be between 0 and 10
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="communication_skills">
+                            Communication Skills
+                            <span class="tooltip">
+                                <span class="info-icon">i</span>
+                                <span class="tooltiptext">Communication ability rating (1-10)</span>
+                            </span>
+                        </label>
+                        <input
+                            type="number"
+                            id="communication_skills"
+                            name="communication_skills"
+                            min="1"
+                            max="10"
+                            required
+                        />
+                        <div class="error-message" id="communication_skills-error">
+                            Communication skills must be between 1 and 10
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="projects_completed">
+                            Projects Completed
+                            <span class="tooltip">
+                                <span class="info-icon">i</span>
+                                <span class="tooltiptext">Number of projects completed (0-5)</span>
+                            </span>
+                        </label>
+                        <input
+                            type="number"
+                            id="projects_completed"
+                            name="projects_completed"
+                            min="0"
+                            max="5"
+                            required
+                        />
+                        <div class="error-message" id="projects_completed-error">
+                            Projects must be between 0 and 5
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="internship_experience_yes">
+                            Internship Experience
+                            <span class="tooltip">
+                                <span class="info-icon">i</span>
+                                <span class="tooltiptext">Previous internship experience</span>
+                            </span>
+                        </label>
+                        <select
+                            id="internship_experience_yes"
+                            name="internship_experience_yes"
+                            required
+                        >
+                            <option value="">Select...</option>
+                            <option value="0">No</option>
+                            <option value="1">Yes</option>
+                        </select>
+                        <div class="error-message" id="internship_experience_yes-error">
+                            Please select your internship experience
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn" id="submitBtn">Predict Placement</button>
+
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p>Analyzing your data...</p>
+                </div>
+
+                <div class="result" id="result"></div>
+            </form>
+        </div>
 
         <script>
-            document.getElementById('predictForm').addEventListener('submit', async function (e) {
-                e.preventDefault();
-                const formData = new FormData(e.target);
-                const data = Object.fromEntries(formData.entries());
+            const form = document.getElementById('predictionForm');
+            const submitBtn = document.getElementById('submitBtn');
+            const loading = document.getElementById('loading');
+            const result = document.getElementById('result');
 
-                // Convert string values to numbers
-                for (let key in data) {
-                    data[key] = Number(data[key]);
-                }
+            // Validation rules
+            const validationRules = {
+                iq: { min: 70, max: 160 },
+                prev_sem_result: { min: 5.0, max: 10.0 },
+                cgpa: { min: 5.0, max: 10.0 },
+                academic_performance: { min: 1, max: 10 },
+                extra_curricular_score: { min: 0, max: 10 },
+                communication_skills: { min: 1, max: 10 },
+                projects_completed: { min: 0, max: 5 },
+            };
 
-                const response = await fetch('http://127.0.0.1:5000/predict', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data),
+            // Real-time validation
+            Object.keys(validationRules).forEach((fieldName) => {
+                const field = document.getElementById(fieldName);
+                const errorDiv = document.getElementById(fieldName + '-error');
+
+                field.addEventListener('input', () => {
+                    validateField(fieldName, field, errorDiv);
                 });
 
-                const result = await response.json();
-                document.getElementById('result').innerText = result.result || result.error;
+                field.addEventListener('blur', () => {
+                    validateField(fieldName, field, errorDiv);
+                });
             });
+
+            // Validate internship experience dropdown
+            const internshipField = document.getElementById('internship_experience_yes');
+            const internshipError = document.getElementById('internship_experience_yes-error');
+
+            internshipField.addEventListener('change', () => {
+                if (internshipField.value === '') {
+                    showError(
+                        internshipField,
+                        internshipError,
+                        'Please select your internship experience'
+                    );
+                } else {
+                    showSuccess(internshipField, internshipError);
+                }
+            });
+
+            function validateField(fieldName, field, errorDiv) {
+                const value = parseFloat(field.value);
+                const rules = validationRules[fieldName];
+
+                if (field.value === '') {
+                    showError(field, errorDiv, 'This field is required');
+                    return false;
+                }
+
+                if (isNaN(value)) {
+                    showError(field, errorDiv, 'Please enter a valid number');
+                    return false;
+                }
+
+                if (value < rules.min || value > rules.max) {
+                    showError(
+                        field,
+                        errorDiv,
+                        `Value must be between ${rules.min} and ${rules.max}`
+                    );
+                    return false;
+                }
+
+                showSuccess(field, errorDiv);
+                return true;
+            }
+
+            function showError(field, errorDiv, message) {
+                field.classList.remove('success');
+                field.classList.add('error');
+                errorDiv.textContent = message;
+                errorDiv.style.display = 'block';
+            }
+
+            function showSuccess(field, errorDiv) {
+                field.classList.remove('error');
+                field.classList.add('success');
+                errorDiv.style.display = 'none';
+            }
+
+            function validateForm() {
+                let isValid = true;
+
+                // Validate all numeric fields
+                Object.keys(validationRules).forEach((fieldName) => {
+                    const field = document.getElementById(fieldName);
+                    const errorDiv = document.getElementById(fieldName + '-error');
+                    if (!validateField(fieldName, field, errorDiv)) {
+                        isValid = false;
+                    }
+                });
+
+                // Validate internship experience
+                if (internshipField.value === '') {
+                    showError(
+                        internshipField,
+                        internshipError,
+                        'Please select your internship experience'
+                    );
+                    isValid = false;
+                }
+
+                return isValid;
+            }
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                if (!validateForm()) {
+                    showResult('Please correct the errors above', 'error');
+                    return;
+                }
+
+                // Show loading state
+                submitBtn.disabled = true;
+                loading.style.display = 'block';
+                result.style.display = 'none';
+
+                const formData = new FormData(form);
+                const data = {};
+
+                // Convert form data to numbers
+                for (let [key, value] of formData.entries()) {
+                    data[key] =
+                        key === 'internship_experience_yes' ? parseInt(value) : parseFloat(value);
+                }
+
+                try {
+                    const response = await fetch('http://127.0.0.1:5000/predict', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(data),
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
+                    const resultData = await response.json();
+
+                    if (resultData.error) {
+                        showResult(`Error: ${resultData.error}`, 'error');
+                    } else {
+                        const isSelected = resultData.prediction === 1;
+                        const message = isSelected
+                            ? '🎉 Congratulations! You are likely to be selected for the internship!'
+                            : '😔 Based on the analysis, you might not be selected for the internship. Consider improving your skills!';
+
+                        showResult(message, isSelected ? 'success' : 'failure');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    showResult(
+                        'Network error. Please check if the server is running and try again.',
+                        'error'
+                    );
+                } finally {
+                    // Hide loading state
+                    submitBtn.disabled = false;
+                    loading.style.display = 'none';
+                }
+            });
+
+            function showResult(message, type) {
+                result.textContent = message;
+                result.className = `result ${type}`;
+                result.style.display = 'block';
+                result.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+
+            // Form reset functionality
+            function resetForm() {
+                form.reset();
+                result.style.display = 'none';
+
+                // Reset all field states
+                const fields = form.querySelectorAll('input, select');
+                fields.forEach((field) => {
+                    field.classList.remove('error', 'success');
+                });
+
+                const errorMessages = form.querySelectorAll('.error-message');
+                errorMessages.forEach((error) => {
+                    error.style.display = 'none';
+                });
+            }
+
+            // Add reset button functionality (optional)
+            const resetBtn = document.createElement('button');
+            resetBtn.textContent = 'Reset Form';
+            resetBtn.type = 'button';
+            resetBtn.className = 'submit-btn';
+            resetBtn.style.background = '#6c757d';
+            resetBtn.style.marginTop = '10px';
+            resetBtn.addEventListener('click', resetForm);
+
+            // Uncomment the line below if you want to add a reset button
+            // form.appendChild(resetBtn);
         </script>
     </body>
 </html>
