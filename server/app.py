@@ -8,21 +8,26 @@ import os
 app = Flask(__name__)
 CORS(app)  # ✅ allow cross-origin requests
 
+# Get absolute path to current script directory
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-MODEL_PATH = os.path.join(BASE_DIR, "college_student_placement.pkl")
 
+# Model and columns.json are in the SAME folder as app.py
+MODEL_PATH = os.path.join(BASE_DIR, "college_student_placement.pkl")
+COLUMNS_PATH = os.path.join(BASE_DIR, "columns.json")
+
+# Load model
 with open(MODEL_PATH, "rb") as f:
     model = pickle.load(f)
 
 # Load feature columns
-columns_path = os.path.join(BASE_DIR, "..", "columns.json")
-with open(columns_path, "r") as f:
+with open(COLUMNS_PATH, "r") as f:
     columns = json.load(f)["data_columns"]
 
 @app.route("/predict", methods=["POST"])
 def predict():
     data = request.json
     try:
+        # Arrange inputs in training column order
         input_data = [data.get(col, 0) for col in columns]
         input_array = np.array([input_data])
 
