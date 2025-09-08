@@ -12,3 +12,5 @@ MODEL_PATH = os.path.join(BASE_DIR, "college_student_placement.pkl")
 
 with open(MODEL_PATH, "rb") as f:
     model = pickle.load(f)
+
+
