@@ -8,3 +8,4 @@ This a Web Appcilation that predicts the placement status of university students
 
 ## 📂 Project Structure
 
+<img width="410" height="622" alt="image" src="https://github.com/user-attachments/assets/16db6290-30b8-4ad0-885e-fb76df3449dd" />
