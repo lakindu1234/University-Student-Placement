@@ -19,7 +19,6 @@ Project/
 │   ├── script.js    
 │   ├── style.css         
 │   
-│
 │── server/
 │   ├── app.py          
 │   ├── college_student_placement.pkl     
