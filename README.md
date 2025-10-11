@@ -18,7 +18,7 @@ Project/
 │   ├── index.html       
 │   ├── script.js    
 │   ├── style.css         
-│   └── App.tsx
+│   
 │
 │── server/
 │   ├── app.py          
