@@ -5,24 +5,25 @@ This a Web Appcilation that predicts the placement status of university students
 
 <img width="1919" height="935" alt="image" src="https://github.com/user-attachments/assets/013b4966-e020-46ad-9c94-3f186d4635ed" />
 
-
-## 📂 Project Structure
-
+<pre>
+  
 Project/
 │── Model/
 │   ├── college_student_placement.pkl
 │   ├── college_student_placement_dataset.csv
 │   ├── columns.json
-│   ├── main.ipynb
+│   └── main.ipynb
+│
 │── client/
 │   ├── index.html       
 │   ├── script.js    
 │   ├── style.css         
-
 │   └── App.tsx
+│
 │── server/
-│   ├── assets/          # Static files
-│   ├── components/      # Reusable UI components
-│   ├── pages/           # Screens (Dashboard, Login, Profile)
+│   ├── app.py          
+│   ├── college_student_placement.pkl     
+│   ├── columns.json 
 
-│   └── App.tsx
+</pre>
+
