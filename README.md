@@ -8,4 +8,21 @@ This a Web Appcilation that predicts the placement status of university students
 
 ## 📂 Project Structure
 
+Project/
+│── Model/
+│   ├── college_student_placement.pkl
+│   ├── college_student_placement_dataset.csv
+│   ├── columns.json
+│   ├── main.ipynb
+│── client/
+│   ├── index.html       
+│   ├── script.js    
+│   ├── style.css         
 
+│   └── App.tsx
+│── server/
+│   ├── assets/          # Static files
+│   ├── components/      # Reusable UI components
+│   ├── pages/           # Screens (Dashboard, Login, Profile)
+
+│   └── App.tsx
