@@ -15,6 +15,12 @@ class PlacementApp:
         model_path = os.path.join(base_dir, "college_student_placement.pkl")
         columns_path = os.path.join(base_dir, "columns.json")
 
+        # Check if files exist
+        if not os.path.exists(model_path):
+            raise FileNotFoundError(f"Model file not found: {model_path}")
+        if not os.path.exists(columns_path):
+            raise FileNotFoundError(f"Columns file not found: {columns_path}")
+
         # Load model and columns
         with open(model_path, "rb") as f:
             self.model = pickle.load(f)
@@ -27,6 +33,11 @@ class PlacementApp:
     def predict(self):
         data = request.json
         try:
+            # Validate that all required columns are present
+            missing_columns = [col for col in self.columns if col not in data]
+            if missing_columns:
+                return jsonify({"error": f"Missing required fields: {', '.join(missing_columns)}"}), 400
+
             # Arrange input in training column order
             input_data = [data.get(col, 0) for col in self.columns]
             input_array = np.array([input_data])
@@ -35,8 +46,10 @@ class PlacementApp:
             result = "Selected for Internship" if prediction == 1 else "Not Selected"
 
             return jsonify({"prediction": int(prediction), "result": result})
+        except ValueError as e:
+            return jsonify({"error": f"Invalid input data: {str(e)}"}), 400
         except Exception as e:
-            return jsonify({"error": str(e)}), 400
+            return jsonify({"error": f"Prediction error: {str(e)}"}), 500
 
     def run(self):
         self.app.run(debug=True)
