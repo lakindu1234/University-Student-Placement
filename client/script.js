@@ -1,46 +1,52 @@
-const form = document.getElementById('predictionForm');
-const submitBtn = document.getElementById('submitBtn');
-const loading = document.getElementById('loading');
-const result = document.getElementById('result');
+// Wait for DOM to be fully loaded
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('predictionForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const loading = document.getElementById('loading');
+    const result = document.getElementById('result');
+    const internshipField = document.getElementById('internship_experience_yes');
+    const internshipError = document.getElementById('internship_experience_yes-error');
 
-// Validation rules
-const validationRules = {
-    iq: { min: 70, max: 160 },
-    prev_sem_result: { min: 5.0, max: 10.0 },
-    cgpa: { min: 5.0, max: 10.0 },
-    academic_performance: { min: 1, max: 10 },
-    extra_curricular_score: { min: 0, max: 10 },
-    communication_skills: { min: 1, max: 10 },
-    projects_completed: { min: 0, max: 5 },
-};
+    // Validation rules
+    const validationRules = {
+        iq: { min: 70, max: 160 },
+        prev_sem_result: { min: 5.0, max: 10.0 },
+        cgpa: { min: 5.0, max: 10.0 },
+        academic_performance: { min: 1, max: 10 },
+        extra_curricular_score: { min: 0, max: 10 },
+        communication_skills: { min: 1, max: 10 },
+        projects_completed: { min: 0, max: 5 },
+    };
 
-// Real-time validation
-Object.keys(validationRules).forEach((fieldName) => {
-    const field = document.getElementById(fieldName);
-    const errorDiv = document.getElementById(fieldName + '-error');
+    // Real-time validation
+    Object.keys(validationRules).forEach((fieldName) => {
+        const field = document.getElementById(fieldName);
+        const errorDiv = document.getElementById(fieldName + '-error');
 
-    field.addEventListener('input', () => {
-        validateField(fieldName, field, errorDiv);
+        if (field) {
+            field.addEventListener('input', () => {
+                validateField(fieldName, field, errorDiv);
+            });
+
+            field.addEventListener('blur', () => {
+                validateField(fieldName, field, errorDiv);
+            });
+        }
     });
 
-    field.addEventListener('blur', () => {
-        validateField(fieldName, field, errorDiv);
-    });
-});
+    // Validate internship experience dropdown
+    if (internshipField) {
 
-// Validate internship experience dropdown
-const internshipField = document.getElementById('internship_experience_yes');
-const internshipError = document.getElementById('internship_experience_yes-error');
-
-internshipField.addEventListener('change', () => {
-    if (internshipField.value === '') {
-        showError(internshipField, internshipError, 'Please select your internship experience');
-    } else {
-        showSuccess(internshipField, internshipError);
+        internshipField.addEventListener('change', () => {
+            if (internshipField.value === '') {
+                showError(internshipField, internshipError, 'Please select your internship experience');
+            } else {
+                showSuccess(internshipField, internshipError);
+            }
+        });
     }
-});
 
-function validateField(fieldName, field, errorDiv) {
+    function validateField(fieldName, field, errorDiv) {
     const value = parseFloat(field.value);
     const rules = validationRules[fieldName];
 
