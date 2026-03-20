@@ -52,9 +52,17 @@ class PlacementApp:
             return jsonify({"error": f"Prediction error: {str(e)}"}), 500
 
     def run(self):
-        self.app.run(debug=True)
+        self.app.run(debug=True, host='127.0.0.1', port=5000)
 
 
 if __name__ == "__main__":
-    app_instance = PlacementApp()
-    app_instance.run()
+    try:
+        app_instance = PlacementApp()
+        app_instance.run()
+    except FileNotFoundError as e:
+        print(f"Error: {e}")
+        print("Please ensure that 'college_student_placement.pkl' and 'columns.json' are in the server directory.")
+        exit(1)
+    except Exception as e:
+        print(f"Failed to start application: {e}")
+        exit(1)
