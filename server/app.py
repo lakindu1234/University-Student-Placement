@@ -38,6 +38,25 @@ class PlacementApp:
             if missing_columns:
                 return jsonify({"error": f"Missing required fields: {', '.join(missing_columns)}"}), 400
 
+            # Define validation ranges
+            validation_rules = {
+                "iq": {"min": 70, "max": 160},
+                "prev_sem_result": {"min": 2.0, "max": 4.0},
+                "cgpa": {"min": 2.0, "max": 4.0},
+                "academic_performance": {"min": 1, "max": 10},
+                "extra_curricular_score": {"min": 0, "max": 10},
+                "communication_skills": {"min": 1, "max": 10},
+                "projects_completed": {"min": 0, "max": 5},
+                "internship_experience_yes": {"min": 0, "max": 1}
+            }
+
+            # Validate input values
+            for field, rules in validation_rules.items():
+                if field in data:
+                    value = float(data[field])
+                    if value < rules["min"] or value > rules["max"]:
+                        return jsonify({"error": f"{field} must be between {rules['min']} and {rules['max']}"}), 400
+
             # Arrange input in training column order
             input_data = [data.get(col, 0) for col in self.columns]
             input_array = np.array([input_data])

@@ -10,8 +10,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Validation rules
     const validationRules = {
         iq: { min: 70, max: 160 },
-        prev_sem_result: { min: 5.0, max: 10.0 },
-        cgpa: { min: 5.0, max: 10.0 },
+        prev_sem_result: { min: 2.0, max: 4.0 },
+        cgpa: { min: 2.0, max: 4.0 },
         academic_performance: { min: 1, max: 10 },
         extra_curricular_score: { min: 0, max: 10 },
         communication_skills: { min: 1, max: 10 },
